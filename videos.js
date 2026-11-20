@@ -1,0 +1,15 @@
+const VIDEO_LINKS = [
+  "https://youtube.com/shorts/k66ooiAAtys?si=8WOt4RLvqIo-x_U9",
+  "https://youtube.com/shorts/HnZs1J-m9A4?si=wXtLA_gWX8PqTZIm",
+  "https://youtube.com/shorts/XP7tj7Qhfl8?si=yq98rmZwmGB7xKfS",
+  "https://youtube.com/shorts/dvMaTJ2lJ-Q?si=Qv3_fcU06-UbpKcn",
+  "https://youtube.com/shorts/xjEZ9CPpJrM?si=Br9N8R9JNVvnPMfE",
+  "https://youtube.com/shorts/l5jcwFnbr1Q?si=IfGFqTExuJE-Wm9r",
+  "https://youtu.be/xiOMcybJDoE?si=Stw1vSDg0IynTYg2",
+  "https://youtube.com/shorts/iV6ucCstVAI?si=ZY8rMr2Zweb9vSh_",
+  "https://youtube.com/shorts/0ITQAl8ouqA?si=9TLzdkKZzz5yC1_f",
+  "https://youtube.com/shorts/0YZuwrMMiFI?si=n6iX_A9CUxvLMpGo",
+  "https://youtube.com/shorts/tj6D2MQBKEw?si=xFPBLmkTTdCEGlh8",
+  "https://youtube.com/shorts/cMFIyixZ5oU?si=sr8TN-UCvDKq5czE",
+  "https://youtube.com/shorts/bcH5kseaB8Q?si=TXrgt3QZDNX64z20",
+];
