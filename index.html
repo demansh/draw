@@ -12,6 +12,17 @@
     <header class="app-header">
       <h1 class="app-title">✏️ Упражнения для рисования</h1>
       <p class="app-subtitle" id="video-count"></p>
+      <nav class="filter-tabs" id="filter-tabs" aria-label="Тип видео">
+        <button class="filter-tab" type="button" data-filter="all" aria-pressed="true">
+          Все<span class="filter-tab-count"></span>
+        </button>
+        <button class="filter-tab" type="button" data-filter="shorts" aria-pressed="false">
+          Shorts<span class="filter-tab-count"></span>
+        </button>
+        <button class="filter-tab" type="button" data-filter="videos" aria-pressed="false">
+          Видео<span class="filter-tab-count"></span>
+        </button>
+      </nav>
     </header>
 
     <main class="feed" id="feed" aria-live="polite"></main>

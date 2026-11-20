@@ -39,7 +39,7 @@ function activateInlinePlayer(frameElement, video, label) {
 
 function createVideoCard(template, video, index, onExpand) {
   const card = template.content.firstElementChild.cloneNode(true);
-  const label = `Упражнение ${index + 1}`;
+  const label = `Упражнение ${video.position}`;
   card.dataset.format = video.format;
 
   const thumbnail = card.querySelector(".video-thumbnail");
@@ -67,10 +67,12 @@ function showFeedMessage(feed, text) {
   feed.replaceChildren(message);
 }
 
-export function renderFeed({ feed, template, counter, videos, onExpand }) {
+export function renderFeed({ feed, template, counter, videos, emptyMessage, onExpand }) {
+  visibilityObserver.disconnect();
+
   if (videos.length === 0) {
     counter.textContent = "";
-    showFeedMessage(feed, "Пока нет видео. Добавьте ссылки в videos.js");
+    showFeedMessage(feed, emptyMessage);
     return;
   }
 

@@ -4,7 +4,7 @@ import { loadYoutubeApi } from "./youtube-api.js";
 const SWIPE_THRESHOLD_PX = 50;
 const PLAYER_ELEMENT_ID = "viewer-player";
 
-export function createViewer({ videos, onOpen }) {
+export function createViewer({ onOpen }) {
   const root = document.getElementById("viewer");
   const counter = root.querySelector(".viewer-counter");
   const youtubeLink = root.querySelector(".viewer-link");
@@ -14,6 +14,7 @@ export function createViewer({ videos, onOpen }) {
   const closeButton = root.querySelector('[data-action="close"]');
 
   const state = {
+    videos: [],
     isOpen: false,
     currentIndex: 0,
     player: null,
@@ -77,14 +78,14 @@ export function createViewer({ videos, onOpen }) {
   }
 
   async function showVideo(index) {
-    if (index < 0 || index >= videos.length) return;
-    const video = videos[index];
+    if (index < 0 || index >= state.videos.length) return;
+    const video = state.videos[index];
     state.currentIndex = index;
     root.dataset.format = video.format;
-    counter.textContent = `${index + 1} / ${videos.length}`;
+    counter.textContent = `${index + 1} / ${state.videos.length}`;
     youtubeLink.href = video.originalUrl;
     previousButton.disabled = index === 0;
-    nextButton.disabled = index === videos.length - 1;
+    nextButton.disabled = index === state.videos.length - 1;
     hideError();
 
     try {
@@ -116,7 +117,8 @@ export function createViewer({ videos, onOpen }) {
       });
   }
 
-  function open(index) {
+  function open(playlist, index) {
+    state.videos = playlist;
     if (!state.isOpen) {
       state.isOpen = true;
       onOpen?.();
