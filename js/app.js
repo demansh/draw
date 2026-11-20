@@ -41,7 +41,6 @@ const filterTabs = document.getElementById("filter-tabs");
 const feedElements = {
   feed: document.getElementById("feed"),
   template: document.getElementById("video-card-template"),
-  counter: document.getElementById("video-count"),
 };
 
 function updateFilterTabs(activeFilterName) {

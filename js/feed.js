@@ -55,7 +55,6 @@ function createVideoCard(template, video, index, onExpand) {
   );
 
   card.querySelector(".video-expand").addEventListener("click", () => onExpand(index));
-  card.querySelector(".video-label").textContent = label;
   card.querySelector(".video-link").href = video.originalUrl;
   return card;
 }
@@ -67,16 +66,14 @@ function showFeedMessage(feed, text) {
   feed.replaceChildren(message);
 }
 
-export function renderFeed({ feed, template, counter, videos, emptyMessage, onExpand }) {
+export function renderFeed({ feed, template, videos, emptyMessage, onExpand }) {
   visibilityObserver.disconnect();
 
   if (videos.length === 0) {
-    counter.textContent = "";
     showFeedMessage(feed, emptyMessage);
     return;
   }
 
-  counter.textContent = `${videos.length} видео`;
   const fragment = document.createDocumentFragment();
   videos.forEach((video, index) => fragment.append(createVideoCard(template, video, index, onExpand)));
   feed.replaceChildren(fragment);

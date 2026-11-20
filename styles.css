@@ -41,12 +41,6 @@ body {
   font-weight: 700;
 }
 
-.app-subtitle {
-  margin: 2px 0 0;
-  font-size: 0.8125rem;
-  color: var(--color-muted);
-}
-
 .filter-tabs {
   display: flex;
   gap: 4px;
@@ -176,14 +170,10 @@ body {
 .video-meta {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 8px;
   padding: 10px 14px;
   font-size: 0.875rem;
-}
-
-.video-label {
-  font-weight: 600;
 }
 
 .video-actions {
