@@ -16,6 +16,28 @@
 
     <main class="feed" id="feed" aria-live="polite"></main>
 
+    <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="Просмотр видео" hidden>
+      <div class="viewer-bar">
+        <span class="viewer-counter"></span>
+        <div class="viewer-bar-actions">
+          <a class="viewer-link" target="_blank" rel="noopener noreferrer">YouTube ↗</a>
+          <button class="viewer-button viewer-button-round" type="button" data-action="close" aria-label="Закрыть">
+            ✕
+          </button>
+        </div>
+      </div>
+      <div class="viewer-stage-area">
+        <div class="viewer-stage">
+          <div id="viewer-player"></div>
+        </div>
+        <p class="viewer-error" role="alert" hidden></p>
+      </div>
+      <div class="viewer-bar viewer-bar-bottom">
+        <button class="viewer-button" type="button" data-action="previous">↑ Назад</button>
+        <button class="viewer-button" type="button" data-action="next">Дальше ↓</button>
+      </div>
+    </div>
+
     <template id="video-card-template">
       <article class="video-card">
         <div class="video-frame">
@@ -26,12 +48,15 @@
         </div>
         <footer class="video-meta">
           <span class="video-label"></span>
-          <a class="video-link" target="_blank" rel="noopener noreferrer">Открыть на YouTube ↗</a>
+          <div class="video-actions">
+            <button class="video-expand" type="button">⛶ На весь экран</button>
+            <a class="video-link" target="_blank" rel="noopener noreferrer">YouTube ↗</a>
+          </div>
         </footer>
       </article>
     </template>
 
     <script src="videos.js"></script>
-    <script src="app.js"></script>
+    <script type="module" src="js/app.js"></script>
   </body>
 </html>

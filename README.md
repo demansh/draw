@@ -16,3 +16,11 @@ python3 -m http.server 8080
 ```
 
 Откройте http://localhost:8080 (через `file://` встроенные видео YouTube не проигрываются).
+
+## Структура
+
+- `videos.js` — список ссылок
+- `js/app.js` — точка входа
+- `js/feed.js` — лента карточек
+- `js/viewer.js` — полноэкранный просмотр с переключением видео
+- `js/youtube-links.js`, `js/youtube-api.js` — разбор ссылок и загрузка YouTube IFrame API
