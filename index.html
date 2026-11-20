@@ -6,7 +6,17 @@
     <meta name="theme-color" content="#111111" />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>Упражнения для рисования</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=2" />
+    <script type="importmap">
+      {
+        "imports": {
+          "./js/feed.js": "./js/feed.js?v=2",
+          "./js/viewer.js": "./js/viewer.js?v=2",
+          "./js/youtube-api.js": "./js/youtube-api.js?v=2",
+          "./js/youtube-links.js": "./js/youtube-links.js?v=2"
+        }
+      }
+    </script>
   </head>
   <body>
     <header class="app-header">
@@ -67,7 +77,7 @@
       </article>
     </template>
 
-    <script src="videos.js"></script>
-    <script type="module" src="js/app.js"></script>
+    <script src="videos.js?v=2"></script>
+    <script type="module" src="./js/app.js?v=2"></script>
   </body>
 </html>
