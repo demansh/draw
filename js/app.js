@@ -1,77 +1,111 @@
-import { parseYoutubeLink } from "./youtube-links.js";
 import { loadYoutubeApi } from "./youtube-api.js";
 import { pauseInlinePlayers, renderFeed } from "./feed.js";
 import { createViewer } from "./viewer.js";
+import { readVideoCatalog } from "./video-catalog.js";
+import {
+  countTags,
+  filterByTags,
+  filterByType,
+  readFilterStateFromUrl,
+  writeFilterStateToUrl,
+} from "./filters.js";
+import { renderTagFilter } from "./tag-filter.js";
 
-const FILTER_QUERY_PARAM = "type";
-const DEFAULT_FILTER = "all";
-
-const FILTERS = {
-  all: { matches: () => true, emptyMessage: "Пока нет видео. Добавьте ссылки в videos.js" },
-  shorts: { matches: (video) => video.format === "portrait", emptyMessage: "Пока нет Shorts" },
-  videos: { matches: (video) => video.format === "landscape", emptyMessage: "Пока нет полных видео" },
+const EMPTY_MESSAGES = {
+  noVideos: "Пока нет видео. Добавьте ссылки в videos.js",
+  noMatches: "Нет видео с выбранными ключевыми словами",
+  noShorts: "Пока нет Shorts",
+  noFullVideos: "Пока нет полных видео",
 };
 
-function readVideos() {
-  const rawLinks = typeof VIDEO_LINKS !== "undefined" && Array.isArray(VIDEO_LINKS) ? VIDEO_LINKS : [];
-  const videos = [];
-  rawLinks.forEach((link) => {
-    const parsedVideo = parseYoutubeLink(link);
-    if (parsedVideo) videos.push({ ...parsedVideo, position: videos.length + 1 });
-    else console.warn("Не удалось распознать ссылку на YouTube:", link);
-  });
-  return videos;
-}
+const rawEntries = typeof VIDEO_LINKS !== "undefined" ? VIDEO_LINKS : [];
+const allVideos = readVideoCatalog(rawEntries);
+const tagLabelsByKey = new Map(allVideos.flatMap((video) => video.tags.map((tag) => [tag.key, tag.label])));
 
-function readFilterFromUrl() {
-  const filterName = new URLSearchParams(location.search).get(FILTER_QUERY_PARAM);
-  return Object.hasOwn(FILTERS, filterName) ? filterName : DEFAULT_FILTER;
-}
-
-function writeFilterToUrl(filterName) {
-  const url = new URL(location.href);
-  if (filterName === DEFAULT_FILTER) url.searchParams.delete(FILTER_QUERY_PARAM);
-  else url.searchParams.set(FILTER_QUERY_PARAM, filterName);
-  history.replaceState(history.state, "", url);
-}
-
-const allVideos = readVideos();
 const viewer = createViewer({ onOpen: () => pauseInlinePlayers() });
-const filterTabs = document.getElementById("filter-tabs");
+const typeTabs = document.getElementById("filter-tabs");
+const tagFilterContainer = document.getElementById("tag-filter");
 const feedElements = {
   feed: document.getElementById("feed"),
   template: document.getElementById("video-card-template"),
 };
 
-function updateFilterTabs(activeFilterName) {
-  filterTabs.querySelectorAll("[data-filter]").forEach((tab) => {
-    const filterName = tab.dataset.filter;
-    tab.setAttribute("aria-pressed", String(filterName === activeFilterName));
-    tab.querySelector(".filter-tab-count").textContent = allVideos.filter(FILTERS[filterName].matches).length;
+const initialState = readFilterStateFromUrl();
+const filterState = {
+  type: initialState.type,
+  selectedTagKeys: new Set([...initialState.selectedTagKeys].filter((tagKey) => tagLabelsByKey.has(tagKey))),
+};
+
+function chooseEmptyMessage(typeVideos) {
+  if (allVideos.length === 0) return EMPTY_MESSAGES.noVideos;
+  if (typeVideos.length > 0) return EMPTY_MESSAGES.noMatches;
+  return filterState.type === "shorts" ? EMPTY_MESSAGES.noShorts : EMPTY_MESSAGES.noFullVideos;
+}
+
+function updateTypeTabs() {
+  typeTabs.querySelectorAll("[data-filter]").forEach((tab) => {
+    const typeName = tab.dataset.filter;
+    const matchingCount = filterByTags(filterByType(allVideos, typeName), filterState.selectedTagKeys).length;
+    tab.setAttribute("aria-pressed", String(typeName === filterState.type));
+    tab.querySelector(".filter-tab-count").textContent = String(matchingCount);
   });
 }
 
-function applyFilter(filterName) {
-  const filter = FILTERS[filterName];
-  const visibleVideos = allVideos.filter(filter.matches);
-  updateFilterTabs(filterName);
+function buildTagCounts(visibleVideos) {
+  const tagCounts = countTags(visibleVideos);
+  const countedKeys = new Set(tagCounts.map((tag) => tag.key));
+  filterState.selectedTagKeys.forEach((tagKey) => {
+    if (!countedKeys.has(tagKey)) tagCounts.push({ key: tagKey, label: tagLabelsByKey.get(tagKey), count: 0 });
+  });
+  return tagCounts;
+}
+
+function applyFilters() {
+  const typeVideos = filterByType(allVideos, filterState.type);
+  const visibleVideos = filterByTags(typeVideos, filterState.selectedTagKeys);
+
+  updateTypeTabs();
+  renderTagFilter({
+    container: tagFilterContainer,
+    tagCounts: buildTagCounts(visibleVideos),
+    selectedTagKeys: filterState.selectedTagKeys,
+  });
   renderFeed({
     ...feedElements,
     videos: visibleVideos,
-    emptyMessage: filter.emptyMessage,
+    emptyMessage: chooseEmptyMessage(typeVideos),
     onExpand: (index) => viewer.open(visibleVideos, index),
   });
 }
 
-filterTabs.addEventListener("click", (event) => {
-  const tab = event.target.closest("[data-filter]");
-  if (!tab || tab.getAttribute("aria-pressed") === "true") return;
-  writeFilterToUrl(tab.dataset.filter);
-  applyFilter(tab.dataset.filter);
+function commitFilterChange() {
+  writeFilterStateToUrl(filterState);
+  applyFilters();
   window.scrollTo({ top: 0 });
+}
+
+typeTabs.addEventListener("click", (event) => {
+  const tab = event.target.closest("[data-filter]");
+  if (!tab || tab.dataset.filter === filterState.type) return;
+  filterState.type = tab.dataset.filter;
+  commitFilterChange();
 });
 
-applyFilter(readFilterFromUrl());
+tagFilterContainer.addEventListener("click", (event) => {
+  const chip = event.target.closest(".tag-chip");
+  if (!chip) return;
+  if (chip.dataset.tagAction === "reset") {
+    filterState.selectedTagKeys.clear();
+  } else if (filterState.selectedTagKeys.has(chip.dataset.tagKey)) {
+    filterState.selectedTagKeys.delete(chip.dataset.tagKey);
+  } else {
+    filterState.selectedTagKeys.add(chip.dataset.tagKey);
+  }
+  commitFilterChange();
+});
+
+writeFilterStateToUrl(filterState);
+applyFilters();
 
 if (allVideos.length > 0) {
   loadYoutubeApi().catch((error) => console.warn(error.message));

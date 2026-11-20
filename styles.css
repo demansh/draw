@@ -83,6 +83,61 @@ body {
   opacity: 0.7;
 }
 
+.tag-filter {
+  display: flex;
+  gap: 6px;
+  margin: 10px -16px 0;
+  padding: 0 16px 2px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tag-filter::-webkit-scrollbar {
+  display: none;
+}
+
+.tag-filter[hidden] {
+  display: none;
+}
+
+.tag-chip {
+  flex: none;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.tag-chip[aria-pressed="true"] {
+  border-color: var(--color-accent);
+  background: rgb(255 77 77 / 0.2);
+}
+
+.tag-chip-reset {
+  border-color: transparent;
+  background: rgb(255 255 255 / 0.1);
+  color: var(--color-muted);
+}
+
+.tag-chip:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.tag-chip-count {
+  margin-left: 4px;
+  color: var(--color-muted);
+}
+
 .feed {
   display: grid;
   gap: var(--gap);
@@ -355,7 +410,8 @@ body.is-viewer-open {
 
 @media (prefers-reduced-motion: reduce) {
   .play-icon,
-  .filter-tab {
+  .filter-tab,
+  .tag-chip {
     transition: none;
   }
 }
